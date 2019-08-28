@@ -1,17 +1,17 @@
 using Test
 using NativeSVG
 
-SVG("simple_example.svg", width="300", height="200") do
+Drawing("simple_example.svg", width="300", height="200") do
   rect(width="100%", height="100%", fill="red")
   circle(cx="150", cy="100", r="80", fill="green")
   text(x="150", y="125", font_size="60", text_anchor="middle", fill="white") do
-    str("SVG")
+    str("Drawing")
   end
 end
 finish()
 preview()
 
-SVG("basic-shapes.svg", width="200", height="250") do
+Drawing("basic-shapes.svg", width="200", height="250") do
     rect(x="10", y="10", width="30", height="30", stroke="black", fill="transparent", stroke_width="5")
     rect(x="60", y="10", rx="10", ry="10", width="30", height="30", stroke="black", fill="transparent", stroke_width="5")
     circle(cx="25", cy="75", r="20", stroke="red", fill="transparent", stroke_width="5")
@@ -26,7 +26,7 @@ end
 finish()
 preview()
 
-SVG("path-1.svg", width="100", height="100") do
+Drawing("path-1.svg", width="100", height="100") do
   path(d="M 10 10 H 90 V 90 H 10 L 10 10")
   circle(cx="10", cy="10", r="2", fill="red")
   circle(cx="90", cy="90", r="2", fill="red")
@@ -36,7 +36,7 @@ end
 finish()
 preview()
 
-SVG("path-2.svg", width="190", height="160") do
+Drawing("path-2.svg", width="190", height="160") do
   path(d="M 10 10 C 20 20, 40 20, 50 10", stroke="gray", fill="transparent")
   path(d="M 70 10 C 70 20, 120 20, 120 10", stroke="gray", fill="transparent")
   path(d="M 130 10 C 120 20, 180 20, 170 10", stroke="gray", fill="transparent")
@@ -50,7 +50,7 @@ end
 finish()
 preview()
 
-SVG("styles.svg", width="200", height="200") do
+Drawing("styles.svg", width="200", height="200") do
   defs() do
     style(type="text/css") do
       cdata("""#MyRect {
@@ -64,7 +64,7 @@ end
 finish()
 preview()
 
-SVG("center_and_focal_point.svg", width="120", height="120") do
+Drawing("center_and_focal_point.svg", width="120", height="120") do
   defs() do
     radialGradient(id="Gradient", cx="0.5", cy="0.5", r="0.5", fx="0.25", fy="0.25") do
       stop(offset="0%", stop_color="red")
@@ -86,7 +86,7 @@ end
 finish()
 preview()
 
-SVG("patterns.svg", width="200", height="200") do
+Drawing("patterns.svg", width="200", height="200") do
   defs() do
     linearGradient(id="Gradient1") do
       stop(offset="5%", stop_color="white")
@@ -107,8 +107,8 @@ end
 finish()
 preview()
 
-SVG("tspan.svg") do
-  text(x="10", y="10") do
+Drawing("tspan.svg") do
+  text(x="10", y="10", fill="gray") do
     str("This is ")
     tspan(font_weight="bold", fill="red") do
       str("bold and red")
@@ -118,7 +118,7 @@ end
 finish()
 preview()
 
-SVG("textPath.svg") do
+Drawing("textPath.svg") do
   path(id="my_path", d="M 20,20 C 80,60 100,40 120,20", fill="transparent")
   text(fill="red") do
     textPath(xmlns!xlink="http://www.w3.org/1999/xlink", xlink!href="#my_path") do

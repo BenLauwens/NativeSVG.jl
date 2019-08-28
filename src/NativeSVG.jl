@@ -2,29 +2,37 @@ module NativeSVG
 
 using Juno
 
-export SVG, finish, preview
+export Drawing, finish, preview
 export line, circle, path, rect, polygon, polyline, ellipse, tref, stop
-export g, text, defs, style, linearGradient, radialGradient, pattern, tspan, textPath
+export g,
+       text,
+       defs,
+       style,
+       linearGradient,
+       radialGradient,
+       pattern,
+       tspan,
+       textPath
 export str, cdata
 
-struct SVG
-    filename :: String
-    buffer :: IOBuffer
-    bufferdata :: Array{UInt8, 1}
-    SVG(fname::String="") = new(fname, IOBuffer(), UInt8[])
+struct Drawing
+    filename::String
+    buffer::IOBuffer
+    bufferdata::Array{UInt8,1}
+    Drawing(fname::String = "") = new(fname, IOBuffer(), UInt8[])
 end
 
-const CRSVG = Ref(SVG())
+const DRAWING = Ref(Drawing())
 
-Base.showable(::MIME"image/svg+xml", _::NativeSVG.SVG) = true
+Base.showable(::MIME"image/svg+xml", _::NativeSVG.Drawing) = true
 
-function Base.show(io::IO, ::MIME"image/svg+xml", svg::NativeSVG.SVG)
+function Base.show(io::IO, ::MIME"image/svg+xml", svg::NativeSVG.Drawing)
     write(io, svg.bufferdata)
 end
 
-function SVG(f::Function, fname="nativeSVG-drawing.svg"; kwargs...)
-    CRSVG[] = SVG(fname)
-    io = CRSVG[].buffer
+function Drawing(f::Function, fname = "nativeSVG-drawing.svg"; kwargs...)
+    DRAWING[] = Drawing(fname)
+    io = DRAWING[].buffer
     print(io, "<svg xmlns=\"http://www.w3.org/2000/svg\"")
     for (arg, val) in kwargs
         print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
@@ -32,52 +40,63 @@ function SVG(f::Function, fname="nativeSVG-drawing.svg"; kwargs...)
     println(io, ">")
     f()
     println(io, "</svg>")
-    CRSVG[]
+    DRAWING[]
 end
 
 function finish()
-    append!(CRSVG[].bufferdata, take!(CRSVG[].buffer))
-    open(CRSVG[].filename, "w") do io
-        write(io, CRSVG[].bufferdata)
+    append!(DRAWING[].bufferdata, take!(DRAWING[].buffer))
+    open(DRAWING[].filename, "w") do io
+        write(io, DRAWING[].bufferdata)
     end
 end
 
 function preview()
-    (isdefined(Main, :IJulia) && Main.IJulia.inited) ? jupyter = true : jupyter = false
+    (isdefined(Main, :IJulia) && Main.IJulia.inited) ? jupyter = true :
+    jupyter = false
     Juno.isactive() ? juno = true : juno = false
     if jupyter
         Main.IJulia.clear_output(true)
-        display_ijulia(MIME("image/svg+xml"), CRSVG[].filename)
+        display_ijulia(MIME("image/svg+xml"), DRAWING[].filename)
         return
     elseif juno
-        display(CRSVG[])
+        display(DRAWING[])
         return
     elseif Sys.isapple()
-        run(`open $(CRSVG[].filename)`)
-        return CRSVG[].filename
+        run(`open $(DRAWING[].filename)`)
+        return DRAWING[].filename
     elseif Sys.iswindows()
         cmd = get(ENV, "COMSPEC", "cmd")
-        run(`$(ENV["COMSPEC"]) /c start $(CRSVG[].filename)`)
-        return CRSVG[].filename
+        run(`$(ENV["COMSPEC"]) /c start $(DRAWING[].filename)`)
+        return DRAWING[].filename
     elseif Sys.isunix()
-        run(`xdg-open $(CRSVG[].filename)`)
-        return CRSVG[].filename
+        run(`xdg-open $(DRAWING[].filename)`)
+        return DRAWING[].filename
     end
 end
 
-function str(txt::String, io=CRSVG[].buffer)
+function str(txt::String, io = DRAWING[].buffer)
     println(io, txt)
 end
 
-function cdata(txt::String, io=CRSVG[].buffer)
+function cdata(txt::String, io = DRAWING[].buffer)
     println(io, "<![CDATA[")
     println(io, txt)
     println(io, "]]>")
 end
 
-for primitive in (:line, :circle, :path, :rect, :polygon, :polyline, :ellipse, :stop, :tref)
+for primitive in (
+    :line,
+    :circle,
+    :path,
+    :rect,
+    :polygon,
+    :polyline,
+    :ellipse,
+    :stop,
+    :tref
+)
     eval(quote
-        function $primitive(io=CRSVG[].buffer; kwargs...)
+        function $primitive(io = DRAWING[].buffer; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
@@ -87,9 +106,19 @@ for primitive in (:line, :circle, :path, :rect, :polygon, :polyline, :ellipse, :
     end)
 end
 
-for primitive in (:g, :text, :defs, :style, :linearGradient, :radialGradient, :pattern, :tspan, :textPath)
+for primitive in (
+    :g,
+    :text,
+    :defs,
+    :style,
+    :linearGradient,
+    :radialGradient,
+    :pattern,
+    :tspan,
+    :textPath
+)
     eval(quote
-        function $primitive(f::Function, io=CRSVG[].buffer; kwargs...)
+        function $primitive(f::Function, io = DRAWING[].buffer; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
@@ -102,7 +131,7 @@ for primitive in (:g, :text, :defs, :style, :linearGradient, :radialGradient, :p
 end
 
 function replacenotallowed(sym::Symbol)
-    String(replace(collect(String(sym)), '_'=>'-', '!'=>':'))
+    String(replace(collect(String(sym)), '_' => '-', '!' => ':'))
 end
 
 end
