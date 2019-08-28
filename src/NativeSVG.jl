@@ -4,22 +4,14 @@ using Juno
 
 export Drawing, finish, preview
 export line, circle, path, rect, polygon, polyline, ellipse, tref, stop
-export g,
-       text,
-       defs,
-       style,
-       linearGradient,
-       radialGradient,
-       pattern,
-       tspan,
-       textPath
+export g, text, defs, style, linearGradient, radialGradient, pattern, tspan, textPath
 export str, cdata
 
 struct Drawing
-    filename::String
-    buffer::IOBuffer
-    bufferdata::Array{UInt8,1}
-    Drawing(fname::String = "") = new(fname, IOBuffer(), UInt8[])
+    filename :: String
+    buffer :: IOBuffer
+    bufferdata :: Array{UInt8, 1}
+    Drawing(fname::String="") = new(fname, IOBuffer(), UInt8[])
 end
 
 const DRAWING = Ref(Drawing())
@@ -30,7 +22,7 @@ function Base.show(io::IO, ::MIME"image/svg+xml", svg::NativeSVG.Drawing)
     write(io, svg.bufferdata)
 end
 
-function Drawing(f::Function, fname = "nativeSVG-drawing.svg"; kwargs...)
+function Drawing(f::Function, fname="nativeSVG-drawing.svg"; kwargs...)
     DRAWING[] = Drawing(fname)
     io = DRAWING[].buffer
     print(io, "<svg xmlns=\"http://www.w3.org/2000/svg\"")
@@ -51,8 +43,7 @@ function finish()
 end
 
 function preview()
-    (isdefined(Main, :IJulia) && Main.IJulia.inited) ? jupyter = true :
-    jupyter = false
+    (isdefined(Main, :IJulia) && Main.IJulia.inited) ? jupyter = true : jupyter = false
     Juno.isactive() ? juno = true : juno = false
     if jupyter
         Main.IJulia.clear_output(true)
@@ -74,29 +65,19 @@ function preview()
     end
 end
 
-function str(txt::String, io = DRAWING[].buffer)
+function str(txt::String, io=DRAWING[].buffer)
     println(io, txt)
 end
 
-function cdata(txt::String, io = DRAWING[].buffer)
+function cdata(txt::String, io=DRAWING[].buffer)
     println(io, "<![CDATA[")
     println(io, txt)
     println(io, "]]>")
 end
 
-for primitive in (
-    :line,
-    :circle,
-    :path,
-    :rect,
-    :polygon,
-    :polyline,
-    :ellipse,
-    :stop,
-    :tref
-)
+for primitive in (:line, :circle, :path, :rect, :polygon, :polyline, :ellipse, :stop, :tref)
     eval(quote
-        function $primitive(io = DRAWING[].buffer; kwargs...)
+        function $primitive(io=DRAWING[].buffer; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
@@ -106,19 +87,9 @@ for primitive in (
     end)
 end
 
-for primitive in (
-    :g,
-    :text,
-    :defs,
-    :style,
-    :linearGradient,
-    :radialGradient,
-    :pattern,
-    :tspan,
-    :textPath
-)
+for primitive in (:g, :text, :defs, :style, :linearGradient, :radialGradient, :pattern, :tspan, :textPath)
     eval(quote
-        function $primitive(f::Function, io = DRAWING[].buffer; kwargs...)
+        function $primitive(f::Function, io=DRAWING[].buffer; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
@@ -131,7 +102,7 @@ for primitive in (
 end
 
 function replacenotallowed(sym::Symbol)
-    String(replace(collect(String(sym)), '_' => '-', '!' => ':'))
+    String(replace(collect(String(sym)), '_'=>'-', '!'=>':'))
 end
 
 end
