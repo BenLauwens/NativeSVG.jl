@@ -42,6 +42,18 @@ svg("path-2.svg", width="190", height="160") do
   path(d="M 130 110 C 120 140, 180 140, 170 110", stroke="black", fill="transparent")
 end
 
+svg("styles.svg", width="200", height="200") do
+  defs() do
+    style(type="text/css") do
+      cdata("""#MyRect {
+                  stroke: black;
+                  fill: red;
+               }""")
+    end
+  end
+  rect(x="10", height="180", y="10", width="180", id="MyRect")
+end
+
 svg("center_and_focal_point.svg", width="120", height="120") do
   defs() do
     radialGradient(id="Gradient", cx="0.5", cy="0.5", r="0.5", fx="0.25", fy="0.25") do

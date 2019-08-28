@@ -4,7 +4,7 @@ using Dates
 
 export svg
 export line, circle, path, rect, polygon, polyline, ellipse, tref, stop
-export g, text, defs, linearGradient, radialGradient, pattern, tspan, textPath
+export g, text, defs, style, linearGradient, radialGradient, pattern, tspan, textPath
 export str, cdata
 
 const BUFFER = Ref(IOBuffer())
@@ -46,7 +46,7 @@ for primitive in (:line, :circle, :path, :rect, :polygon, :polyline, :ellipse, :
     end)
 end
 
-for primitive in (:g, :text, :defs, :linearGradient, :radialGradient, :pattern, :tspan, :textPath)
+for primitive in (:g, :text, :defs, :style, :linearGradient, :radialGradient, :pattern, :tspan, :textPath)
     eval(quote
         function $primitive(f::Function, io=BUFFER[]; kwargs...)
             print(io, "<", $primitive)
