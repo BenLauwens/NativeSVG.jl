@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<text x="10" y="10">
+This is 
+<tspan font-weight="bold" fill="red">
+bold and red
+</tspan>
+</text>
+</svg>
