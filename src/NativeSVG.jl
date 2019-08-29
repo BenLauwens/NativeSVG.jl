@@ -12,28 +12,18 @@ struct Drawing
     filename :: String
     buffer :: IOBuffer
     bufferdata :: Array{UInt8, 1}
-    Drawing(fname::String="") = new(fname, IOBuffer(), UInt8[])
+    Drawing(fname="") = new(fname, IOBuffer(), UInt8[])
 end
 
 const DRAWING = Ref(Drawing())
 
 Base.showable(::MIME"image/svg+xml", _::NativeSVG.Drawing) = true
 
-function display_ijulia(m::MIME"image/svg+xml", fname)
-    open(fname) do f
-        r = string(rand(100000:999999))
-        d = read(f, String)
-        d = replace(d, "id=\"glyph" => "id=\"glyph"*r)
-        d = replace(d, "href=\"#glyph" => "href=\"#glyph"*r)
-        display(m, d)
-    end
-end
-
 function Base.show(io::IO, ::MIME"image/svg+xml", svg::NativeSVG.Drawing)
     write(io, svg.bufferdata)
 end
 
-function Drawing(f::Function, fname="nativeSVG-drawing.svg"; kwargs...)
+function Drawing(f::Function, fname=""; kwargs...)
     DRAWING[] = Drawing(fname)
     io = DRAWING[].buffer
     print(io, "<svg xmlns=\"http://www.w3.org/2000/svg\"")
@@ -48,7 +38,7 @@ end
 
 function finish()
     append!(DRAWING[].bufferdata, take!(DRAWING[].buffer))
-    open(DRAWING[].filename, "w") do io
+    DRAWING[].filename == "" || open(DRAWING[].filename, "w") do io
         write(io, DRAWING[].bufferdata)
     end
 end
@@ -58,7 +48,7 @@ function preview()
     Juno.isactive() ? juno = true : juno = false
     if jupyter
         Main.IJulia.clear_output(true)
-        display_ijulia(MIME("image/svg+xml"), DRAWING[].filename)
+        display(MIME("image/svg+xml"), String(DRAWING[].bufferdata))
         return
     elseif juno
         display(DRAWING[])
