@@ -1,6 +1,7 @@
 module NativeSVG
 
 using Juno
+using IJulia
 
 export Drawing, finish, preview
 export line, circle, path, rect, polygon, polyline, ellipse, tref, stop
@@ -17,6 +18,16 @@ end
 const DRAWING = Ref(Drawing())
 
 Base.showable(::MIME"image/svg+xml", _::NativeSVG.Drawing) = true
+
+function display_ijulia(m::MIME"image/svg+xml", fname)
+    open(fname) do f
+        r = string(rand(100000:999999))
+        d = read(f, String)
+        d = replace(d, "id=\"glyph" => "id=\"glyph"*r)
+        d = replace(d, "href=\"#glyph" => "href=\"#glyph"*r)
+        display(m, d)
+    end
+end
 
 function Base.show(io::IO, ::MIME"image/svg+xml", svg::NativeSVG.Drawing)
     write(io, svg.bufferdata)
