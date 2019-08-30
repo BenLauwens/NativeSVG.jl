@@ -11,6 +11,8 @@ function Base.show(io::IO, svg::NativeSVG.Drawing)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", svg::NativeSVG.Drawing)
+    (isdefined(Main, :IJulia) && Main.IJulia.inited ||
+     isdefined(Main, :Juno) && Main.Juno.isactive()) && return
     filename = "nativesvg.svg"
     open(filename, "w") do io
         write(io, svg.data)
