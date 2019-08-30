@@ -71,3 +71,27 @@ dr = Drawing(width="12cm", height="6cm", viewBox="0 0 1200 600") do
          fill="none", stroke="#888888", stroke_width="2")
 end
 display(dr)
+
+dr = Drawing(width="12cm", height="5.25cm", viewBox="0 0 1200 400") do
+    title() do
+        str("Example arcs01 - arc commands in path data")
+    end
+    desc() do
+        str("""Picture of a pie chart with two pie wedges and
+               a picture of a line with arc blips""")
+    end
+    rect(x="1", y="1", width="1198", height="398",
+         fill="none", stroke="blue", stroke_width="1")
+
+    path(d="M300,200 h-150 a150,150 0 1,0 150,-150 z",
+         fill="red", stroke="blue", stroke_width="5")
+    path(d="M275,175 v-150 a150,150 0 0,0 -150,150 z",
+         fill="yellow", stroke="blue", stroke_width="5")
+
+    path(d="""M600,350 l 50,-25
+              a25,25 -30 0,1 50,-25 l 50,-25
+              a25,50 -30 0,1 50,-25 l 50,-25
+              a25,75 -30 0,1 50,-25 l 50,-25
+              a25,100 -30 0,1 50,-25 l 50,-25""",
+         fill="none", stroke="red", stroke_width="5")
+end
