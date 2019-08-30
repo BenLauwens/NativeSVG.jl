@@ -119,3 +119,17 @@ dr = Drawing() do
   end
 end
 display(dr)
+
+t = Turtle()
+forward(t, -200)
+penup(t)
+turn(t, -90)
+forward(t, 200)
+turn(t, 90)
+pendown(t)
+for c in (:black, :red, :orange, :yellow, :green, :blue, :indigo, :violet)
+    pencolor(t, c)
+    forward(t, 100)
+    turn(t, 45)
+end
+display(Drawing(t))
