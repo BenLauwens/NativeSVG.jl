@@ -1,96 +1,96 @@
 module NativeSVG
 
-using Juno
-using IJulia
-
-export Drawing, finish, preview
-export line, circle, path, rect, polygon, polyline, ellipse, tref, stop
-export g, text, defs, style, linearGradient, radialGradient, pattern, tspan, textPath
+export Drawing
 export str, cdata
 
+const PRIMITIVES = Dict(
+    :svg => true,
+    :g => true,
+    :defs => true,
+    :use => false,
+    :desc => true,
+    :title => true,
+
+    :style => true,
+
+    :path => false,
+    :line => false,
+    :rect => false,
+    :polygon => false,
+    :polyline => false,
+    :circle => false,
+    :ellipse => false,
+    :text => true,
+    :tspan => true,
+    :textPath => true,
+
+
+    :linearGradient => true,
+    :radialGradient => true,
+    :stop => false,
+    :pattern => true,
+)
+
 struct Drawing
-    filename :: String
-    buffer :: IOBuffer
-    bufferdata :: Array{UInt8, 1}
-    Drawing(fname="") = new(fname, IOBuffer(), UInt8[])
+    data :: Array{UInt8, 1}
 end
 
-const DRAWING = Ref(Drawing())
+const BUFFER = IOBuffer()
 
 Base.showable(::MIME"image/svg+xml", _::NativeSVG.Drawing) = true
 
-function Base.show(io::IO, ::MIME"image/svg+xml", svg::NativeSVG.Drawing)
-    write(io, svg.bufferdata)
+function Base.show(io::IO, svg::NativeSVG.Drawing)
+    write(io, String(copy(svg.data)))
 end
 
-function Drawing(f::Function, fname=""; kwargs...)
-    DRAWING[] = Drawing(fname)
-    io = DRAWING[].buffer
-    print(io, "<svg xmlns=\"http://www.w3.org/2000/svg\"")
+function Base.show(io::IO, ::MIME"image/svg+xml", svg::NativeSVG.Drawing)
+    write(io, svg.data)
+end
+
+function Base.write(filename::AbstractString, svg::NativeSVG.Drawing)
+    open(filename, "w") do io
+        write(io, svg.data)
+    end
+end
+
+function Drawing(f::Function, io=BUFFER; kwargs...)
+    println(io, "<?xml version=\"1.0\"?>")
+    print(io, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"")
     for (arg, val) in kwargs
         print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
     end
     println(io, ">")
     f()
     println(io, "</svg>")
-    DRAWING[]
+    Drawing(take!(BUFFER))
 end
 
-function finish()
-    append!(DRAWING[].bufferdata, take!(DRAWING[].buffer))
-    DRAWING[].filename == "" || open(DRAWING[].filename, "w") do io
-        write(io, DRAWING[].bufferdata)
-    end
-end
-
-function preview()
-    (isdefined(Main, :IJulia) && Main.IJulia.inited) ? jupyter = true : jupyter = false
-    Juno.isactive() ? juno = true : juno = false
-    if jupyter
-        Main.IJulia.clear_output(true)
-        display(MIME("image/svg+xml"), String(DRAWING[].bufferdata))
-        return
-    elseif juno
-        display(DRAWING[])
-        return
-    elseif Sys.isapple()
-        run(`open $(DRAWING[].filename)`)
-        return DRAWING[].filename
-    elseif Sys.iswindows()
-        cmd = get(ENV, "COMSPEC", "cmd")
-        run(`$(ENV["COMSPEC"]) /c start $(DRAWING[].filename)`)
-        return DRAWING[].filename
-    elseif Sys.isunix()
-        run(`xdg-open $(DRAWING[].filename)`)
-        return DRAWING[].filename
-    end
-end
-
-function str(txt::String, io=DRAWING[].buffer)
+function str(txt::String, io=BUFFER)
     println(io, txt)
 end
 
-function cdata(txt::String, io=DRAWING[].buffer)
+function cdata(txt::String, io=BUFFER)
     println(io, "<![CDATA[")
     println(io, txt)
     println(io, "]]>")
 end
 
-for primitive in (:line, :circle, :path, :rect, :polygon, :polyline, :ellipse, :stop, :tref)
+for primitive in keys(PRIMITIVES)
     eval(quote
-        function $primitive(io=DRAWING[].buffer; kwargs...)
+        function $primitive(io=BUFFER; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
             end
             println(io, "/>")
         end
+        export $primitive
     end)
 end
 
-for primitive in (:g, :text, :defs, :style, :linearGradient, :radialGradient, :pattern, :tspan, :textPath)
+for primitive in keys(filter(d->last(d), PRIMITIVES))
     eval(quote
-        function $primitive(f::Function, io=DRAWING[].buffer; kwargs...)
+        function $primitive(f::Function, io=BUFFER; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")

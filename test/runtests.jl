@@ -1,17 +1,16 @@
 using Test
 using NativeSVG
 
-Drawing("simple_example.svg", width="300", height="200") do
+dr = Drawing(width="300", height="200") do
   rect(width="100%", height="100%", fill="red")
   circle(cx="150", cy="100", r="80", fill="green")
   text(x="150", y="125", font_size="60", text_anchor="middle", fill="white") do
     str("Drawing")
   end
 end
-finish()
-preview()
+display(dr)
 
-Drawing("basic-shapes.svg", width="200", height="250") do
+dr = Drawing(width="200", height="250") do
     rect(x="10", y="10", width="30", height="30", stroke="black", fill="transparent", stroke_width="5")
     rect(x="60", y="10", rx="10", ry="10", width="30", height="30", stroke="black", fill="transparent", stroke_width="5")
     circle(cx="25", cy="75", r="20", stroke="red", fill="transparent", stroke_width="5")
@@ -23,20 +22,18 @@ Drawing("basic-shapes.svg", width="200", height="250") do
       stroke="green", fill="transparent", stroke_width="5")
     path(d="M20,230 Q40,205 50,230 T90,230", fill="none", stroke="blue", stroke_width="5")
 end
-finish()
-preview()
+display(dr)
 
-Drawing("path-1.svg", width="100", height="100") do
+dr = Drawing(width="100", height="100") do
   path(d="M 10 10 H 90 V 90 H 10 L 10 10")
   circle(cx="10", cy="10", r="2", fill="red")
   circle(cx="90", cy="90", r="2", fill="red")
   circle(cx="90", cy="10", r="2", fill="red")
   circle(cx="10", cy="90", r="2", fill="red")
 end
-finish()
-preview()
+display(dr)
 
-Drawing("path-2.svg", width="190", height="160") do
+dr = Drawing(width="190", height="160") do
   path(d="M 10 10 C 20 20, 40 20, 50 10", stroke="gray", fill="transparent")
   path(d="M 70 10 C 70 20, 120 20, 120 10", stroke="gray", fill="transparent")
   path(d="M 130 10 C 120 20, 180 20, 170 10", stroke="gray", fill="transparent")
@@ -47,10 +44,9 @@ Drawing("path-2.svg", width="190", height="160") do
   path(d="M 70 110 C 70 140, 110 140, 110 110", stroke="gray", fill="transparent")
   path(d="M 130 110 C 120 140, 180 140, 170 110", stroke="gray", fill="transparent")
 end
-finish()
-preview()
+display(dr)
 
-Drawing("styles.svg", width="200", height="200") do
+dr = Drawing(width="200", height="200") do
   defs() do
     style(type="text/css") do
       cdata("""#MyRect {
@@ -61,10 +57,9 @@ Drawing("styles.svg", width="200", height="200") do
   end
   rect(x="10", height="180", y="10", width="180", id="MyRect")
 end
-finish()
-preview()
+display(dr)
 
-Drawing("center_and_focal_point.svg", width="120", height="120") do
+dr = Drawing(width="120", height="120") do
   defs() do
     radialGradient(id="Gradient", cx="0.5", cy="0.5", r="0.5", fx="0.25", fy="0.25") do
       stop(offset="0%", stop_color="red")
@@ -83,10 +78,9 @@ Drawing("center_and_focal_point.svg", width="120", height="120") do
     str("(cx,cy)")
   end
 end
-finish()
-preview()
+display(dr)
 
-Drawing("patterns.svg", width="200", height="200") do
+dr = Drawing(width="200", height="200") do
   defs() do
     linearGradient(id="Gradient1") do
       stop(offset="5%", stop_color="white")
@@ -104,10 +98,9 @@ Drawing("patterns.svg", width="200", height="200") do
   end
   rect(fill="url(#Pattern)", stroke="black", width="200", height="200")
 end
-finish()
-preview()
+display(dr)
 
-Drawing("tspan.svg") do
+dr = Drawing() do
   text(x="10", y="10", fill="gray") do
     str("This is ")
     tspan(font_weight="bold", fill="red") do
@@ -115,10 +108,9 @@ Drawing("tspan.svg") do
     end
   end
 end
-finish()
-preview()
+display(dr)
 
-Drawing("textPath.svg") do
+dr = Drawing() do
   path(id="my_path", d="M 20,20 C 80,60 100,40 120,20", fill="transparent")
   text(fill="red") do
     textPath(xmlns!xlink="http://www.w3.org/1999/xlink", xlink!href="#my_path") do
@@ -126,5 +118,4 @@ Drawing("textPath.svg") do
     end
   end
 end
-finish()
-preview()
+display(dr)
