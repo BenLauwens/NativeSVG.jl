@@ -54,7 +54,7 @@ function Base.write(filename::AbstractString, svg::NativeSVG.Drawing)
 end
 
 function Drawing(f::Function, io=BUFFER; kwargs...)
-    println(io, "<?xml version=\"1.0\"?>")
+    println(io, "<?xml version=\"1.0\" encoding="UTF-8"?>")
     print(io, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"")
     for (arg, val) in kwargs
         print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
