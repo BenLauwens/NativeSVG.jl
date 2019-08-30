@@ -19,7 +19,7 @@ function Base.show(io::IO, ::MIME"text/plain", svg::NativeSVG.Drawing)
         run(`open $(filename)`)
     elseif Sys.iswindows()
         cmd = get(ENV, "COMSPEC", "cmd")
-        run(`$(ENV["COMSPEC"]) /c start $(rfilename)`)
+        run(`$(ENV["COMSPEC"]) /c start $(filename)`)
     elseif Sys.isunix()
         run(`xdg-open $(filename)`)
     end
