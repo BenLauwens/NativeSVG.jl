@@ -29,7 +29,7 @@ TODO
 
 ## Installation
 
-NativeSVG.jl is not yet registered and can be installed by running
+NativeSVG.jl has not yet been registered but can be installed by running
 
 ```julia
 julia> using Pkg
