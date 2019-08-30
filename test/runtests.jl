@@ -121,8 +121,8 @@ end
 display(dr)
 
 t = Turtle()
-forward(t, -200)
 penup(t)
+forward(t, -200)
 turn(t, -90)
 forward(t, 200)
 turn(t, 90)

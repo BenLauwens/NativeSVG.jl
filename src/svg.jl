@@ -10,6 +10,22 @@ function Base.show(io::IO, svg::NativeSVG.Drawing)
     write(io, String(copy(svg.data)))
 end
 
+function Base.show(io::IO, ::MIME"text/plain", svg::NativeSVG.Drawing)
+    filename = "nativesvg.svg"
+    open(filename, "w") do io
+        write(io, svg.data)
+    end
+    if Sys.isapple()
+        run(`open $(filename)`)
+    elseif Sys.iswindows()
+        cmd = get(ENV, "COMSPEC", "cmd")
+        run(`$(ENV["COMSPEC"]) /c start $(rfilename)`)
+    elseif Sys.isunix()
+        run(`xdg-open $(filename)`)
+    end
+    return filename
+end
+
 function Base.show(io::IO, ::MIME"image/svg+xml", svg::NativeSVG.Drawing)
     write(io, svg.data)
 end
