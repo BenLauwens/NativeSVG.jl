@@ -10,9 +10,7 @@ const PRIMITIVES = Dict(
     :use => false,
     :desc => true,
     :title => true,
-
     :style => true,
-
     :path => false,
     :line => false,
     :rect => false,
@@ -23,8 +21,6 @@ const PRIMITIVES = Dict(
     :text => true,
     :tspan => true,
     :textPath => true,
-
-
     :linearGradient => true,
     :radialGradient => true,
     :stop => false,
@@ -33,24 +29,18 @@ const PRIMITIVES = Dict(
 
 for primitive in keys(PRIMITIVES)
     eval(quote
-            export $primitive
-         end)
+        export $primitive
+    end)
 end
 
 export Turtle
 
-const COMMANDS = (
-    :forward,
-    :turn,
-    :penup,
-    :pendown,
-    :pencolor,
-)
+const COMMANDS = (:forward, :turn, :penup, :pendown, :pencolor,)
 
 for command in COMMANDS
     eval(quote
-             export $command
-         end)
+        export $command
+    end)
 end
 
 include("svg.jl")

@@ -1,18 +1,18 @@
 mutable struct Turtle
-    commands :: Array{Tuple, 1}
-    Turtle(cmds=Tuple[]) = new(cmds)
+    commands::Array{Tuple,1}
+    Turtle(cmds = Tuple[]) = new(cmds)
 end
 
 for command in COMMANDS
     eval(quote
-             function $command(t::Turtle, v::Union{Number, Symbol}=:nothing)
-                 push!(t.commands, (Symbol($command), v))
-             end
-         end)
+        function $command(t::Turtle, v::Union{Number,Symbol} = :nothing)
+            push!(t.commands, (Symbol($command), v))
+        end
+    end)
 end
 
-function Drawing(t::Turtle, width::Number=640, height::Number=480)
-    Drawing(width=width, height=height) do
+function Drawing(t::Turtle, width::Number = 640, height::Number = 480)
+    Drawing(width = width, height = height) do
         xpos = width / 2
         ypos = height / 2
         pendown = true
@@ -23,7 +23,13 @@ function Drawing(t::Turtle, width::Number=640, height::Number=480)
                 xold, yold = xpos, ypos
                 xpos += cos(orientation) * arg
                 ypos += sin(orientation) * arg
-                pendown && line(x1=xold, x2=xpos, y1=yold, y2=ypos, stroke=pencolor)
+                pendown && line(
+                    x1 = xold,
+                    x2 = xpos,
+                    y1 = yold,
+                    y2 = ypos,
+                    stroke = pencolor
+                )
             elseif cmd == :turn
                 orientation += mod2pi(deg2rad(arg))
             elseif cmd == :penup

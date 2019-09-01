@@ -1,5 +1,5 @@
 struct Drawing
-    data :: Array{UInt8, 1}
+    data::Array{UInt8,1}
 end
 
 const BUFFER = IOBuffer()
@@ -34,23 +34,23 @@ end
 
 function Base.write(filename::AbstractString, svg::NativeSVG.Drawing)
     open(filename, "w") do io
+        println(io, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
         write(io, svg.data)
     end
 end
 
-function Drawing(f::Function, io::IOBuffer=BUFFER; kwargs...)
-    println(io, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-    svg(;xmlns="http://www.w3.org/2000/svg", version="1.1", kwargs...) do
+function Drawing(f::Function, io::IOBuffer = BUFFER; kwargs...)
+    svg(; xmlns = "http://www.w3.org/2000/svg", version = "1.1", kwargs...) do
         f()
     end
     Drawing(take!(BUFFER))
 end
 
-function str(txt::String, io::IOBuffer=BUFFER)
+function str(txt::String, io::IOBuffer = BUFFER)
     println(io, txt)
 end
 
-function cdata(txt::String, io::IOBuffer=BUFFER)
+function cdata(txt::String, io::IOBuffer = BUFFER)
     println(io, "<![CDATA[")
     println(io, txt)
     println(io, "]]>")
@@ -58,7 +58,7 @@ end
 
 for primitive in keys(PRIMITIVES)
     eval(quote
-        function $primitive(io::IOBuffer=BUFFER; kwargs...)
+        function $primitive(io::IOBuffer = BUFFER; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
@@ -68,9 +68,9 @@ for primitive in keys(PRIMITIVES)
     end)
 end
 
-for primitive in keys(filter(d->last(d), PRIMITIVES))
+for primitive in keys(filter(d -> last(d), PRIMITIVES))
     eval(quote
-        function $primitive(f::Function, io::IOBuffer=BUFFER; kwargs...)
+        function $primitive(f::Function, io::IOBuffer = BUFFER; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
@@ -83,5 +83,5 @@ for primitive in keys(filter(d->last(d), PRIMITIVES))
 end
 
 function replacenotallowed(sym::Symbol)
-    String(replace(collect(String(sym)), '_'=>'-', '!'=>':'))
+    String(replace(collect(String(sym)), '_' => '-', '!' => ':'))
 end
