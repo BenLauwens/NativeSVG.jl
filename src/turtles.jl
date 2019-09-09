@@ -1,4 +1,4 @@
-mutable struct Turtle
+struct Turtle
     commands::Array{Tuple,1}
     Turtle(cmds = Tuple[]) = new(cmds)
 end

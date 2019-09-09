@@ -25,6 +25,8 @@ const PRIMITIVES = Dict(
     :radialGradient => true,
     :stop => false,
     :pattern => true,
+    :marker => true,
+    :clipPath => true,
 )
 
 for primitive in keys(PRIMITIVES)
@@ -43,7 +45,12 @@ for command in COMMANDS
     end)
 end
 
+export figure, gcf
+export axes, gca, hold, subplot
+export plot
+
 include("svg.jl")
 include("turtles.jl")
+include("plotting.jl")
 
 end
