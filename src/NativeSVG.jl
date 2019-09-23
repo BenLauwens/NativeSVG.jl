@@ -1,5 +1,7 @@
 module NativeSVG
 
+using NodeJS
+
 export Drawing
 export str, cdata, latex
 

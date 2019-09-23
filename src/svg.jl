@@ -60,8 +60,8 @@ function cdata(txt::String, io::IOBuffer = BUFFER)
     println(io, "]]>")
 end
 
-const assets = normpath(joinpath(@__DIR__, "..", "assets"))
-const tex2mml = joinpath(assets, "node_modules", "mathjax-node-cli", "bin", "tex2mml")
+const deps = normpath(joinpath(@__DIR__, "..", "deps"))
+const tex2mml = joinpath(deps, "node_modules", "mathjax-node-cli", "bin", "tex2mml")
 
 function latex(text::String, io::IOBuffer = BUFFER; kwargs...)
     foreignObject(; kwargs...) do
