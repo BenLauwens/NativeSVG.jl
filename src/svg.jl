@@ -43,7 +43,6 @@ function Drawing(f::Function, io::IOBuffer = BUFFER; kwargs...)
     svg(
         ;
         xmlns = "http://www.w3.org/2000/svg",
-        version = "1.1",
         kwargs...
     ) do
         f()
@@ -59,6 +58,17 @@ function cdata(txt::String, io::IOBuffer = BUFFER)
     println(io, "<![CDATA[")
     println(io, txt)
     println(io, "]]>")
+end
+
+const assets = normpath(joinpath(@__DIR__, "..", "assets"))
+const tex2mml = joinpath(assets, "node_modules", "mathjax-node-cli", "bin", "tex2mml")
+
+function latex(text::String, io::IOBuffer = BUFFER; kwargs...)
+    foreignObject(; kwargs...) do
+        cmd = `$tex2mml --inline=true --speech=false --semantics=false --notexhints=true $text`
+        mml = read(cmd, String)
+        print(io, mml)
+    end
 end
 
 for primitive in keys(PRIMITIVES)

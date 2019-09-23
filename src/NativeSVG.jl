@@ -1,7 +1,7 @@
 module NativeSVG
 
 export Drawing
-export str, cdata
+export str, cdata, latex
 
 const PRIMITIVES = Dict(
     :svg => true,
@@ -27,6 +27,8 @@ const PRIMITIVES = Dict(
     :pattern => true,
     :marker => true,
     :clipPath => true,
+    :style => true,
+    :foreignObject => true,
 )
 
 for primitive in keys(PRIMITIVES)
@@ -45,8 +47,8 @@ for command in COMMANDS
     end)
 end
 
-export figure, gcf
-export axes, gca, hold, subplot
+export figure, gcf, savefig
+export gca, hold, subplot, title, xlabel, ylabel, legend
 export plot
 
 include("svg.jl")
