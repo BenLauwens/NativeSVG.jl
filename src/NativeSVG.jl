@@ -49,12 +49,7 @@ for command in COMMANDS
     end)
 end
 
-export figure, gcf, savefig
-export gca, hold, subplot, title, xlabel, ylabel, legend
-export plot
-
 include("svg.jl")
 include("turtles.jl")
-include("plotting.jl")
 
 end
