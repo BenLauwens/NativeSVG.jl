@@ -71,28 +71,58 @@ function latex(text::String, io::IOBuffer = BUFFER; kwargs...)
     end
 end
 
+"""
+    empty_element(tagname::String, io::IOBuffer = BUFFER; kwargs...)
+Write an empty SVG element (no children) with the specified tagname
+and attributes.
+"""
+function empty_element(tagname::String, io::IOBuffer = BUFFER; kwargs...)
+  print(io, "<", tagname)
+  for (arg, val) in kwargs
+    print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
+  end
+  println(io, "/>")
+end
+
+function empty_element(tagname::Symbol, io::IOBuffer = BUFFER; kwargs...)
+    empty_element(String(tagname), io; kwargs...)
+end
+
+"""
+    element(f::Function, tagname::String, io::IOBuffer = BUFFER; kwargs...)
+Write an SVG element with name tagname and the specified attributes.
+The function f ic called to generate the SVG for the element's children.
+"""
+function element(f::Function, tagname::String, io::IOBuffer = BUFFER; kwargs...)
+  print(io, "<", tagname)
+  for (arg, val) in kwargs
+    print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
+  end
+  println(io, ">")
+  f()
+  println(io, "</", tagname, ">")
+end
+
+function element(f::Function, tagname::Symbol, io::IOBuffer = BUFFER; kwargs...)
+    element(f, String(tagname), io; kwargs...)
+end
+
+export element, empty_element
+
+# All SVG elements:
 for primitive in keys(PRIMITIVES)
     eval(quote
         function $primitive(io::IOBuffer = BUFFER; kwargs...)
-            print(io, "<", $primitive)
-            for (arg, val) in kwargs
-                print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
-            end
-            println(io, "/>")
+          empty_element($(QuoteNode(primitive)), io; kwargs...)
         end
     end)
 end
 
+# All SVG elements that can have children:
 for primitive in keys(filter(d -> last(d), PRIMITIVES))
     eval(quote
         function $primitive(f::Function, io::IOBuffer = BUFFER; kwargs...)
-            print(io, "<", $primitive)
-            for (arg, val) in kwargs
-                print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
-            end
-            println(io, ">")
-            f()
-            println(io, "</", $primitive, ">")
+          element(f, $(QuoteNode(primitive)), io; kwargs...)
         end
     end)
 end
