@@ -25,3 +25,4 @@ docs/site/
 Manifest.toml
 
 test/*.svg
+deps/package.json
