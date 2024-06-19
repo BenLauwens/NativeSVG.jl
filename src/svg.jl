@@ -6,7 +6,13 @@ const BUFFER = IOBuffer()
 
 Base.showable(::MIME"image/svg+xml", _::NativeSVG.Drawing) = true
 
+Base.showable(::MIME"text/html", _::NativeSVG.Drawing) = true
+
 function Base.show(io::IO, svg::NativeSVG.Drawing)
+    write(io, String(copy(svg.data)))
+end
+
+function Base.show(io::IO, ::MIME"text/html", svg::NativeSVG.Drawing)
     write(io, String(copy(svg.data)))
 end
 
@@ -39,10 +45,10 @@ function Base.write(filename::AbstractString, svg::NativeSVG.Drawing)
     end
 end
 
-function Drawing(f::Function, io::IOBuffer = BUFFER; kwargs...)
+function Drawing(f::Function, io::IOBuffer=BUFFER; kwargs...)
     svg(
         ;
-        xmlns = "http://www.w3.org/2000/svg",
+        xmlns="http://www.w3.org/2000/svg",
         kwargs...
     ) do
         f()
@@ -50,11 +56,11 @@ function Drawing(f::Function, io::IOBuffer = BUFFER; kwargs...)
     Drawing(take!(BUFFER))
 end
 
-function str(txt::String, io::IOBuffer = BUFFER)
+function str(txt::String, io::IOBuffer=BUFFER)
     println(io, txt)
 end
 
-function cdata(txt::String, io::IOBuffer = BUFFER)
+function cdata(txt::String, io::IOBuffer=BUFFER)
     println(io, "<![CDATA[")
     println(io, txt)
     println(io, "]]>")
@@ -63,7 +69,7 @@ end
 const deps = normpath(joinpath(@__DIR__, "..", "deps"))
 const tex2mml = joinpath(deps, "node_modules", "mathjax-node-cli", "bin", "tex2mml")
 
-function latex(text::String, io::IOBuffer = BUFFER; kwargs...)
+function latex(text::String, io::IOBuffer=BUFFER; kwargs...)
     foreignObject(; kwargs...) do
         cmd = `$tex2mml --inline=true --speech=false --semantics=false --notexhints=true $text`
         mml = read(cmd, String)
@@ -73,7 +79,7 @@ end
 
 for primitive in keys(PRIMITIVES)
     eval(quote
-        function $primitive(io::IOBuffer = BUFFER; kwargs...)
+        function $primitive(io::IOBuffer=BUFFER; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
@@ -85,7 +91,7 @@ end
 
 for primitive in keys(filter(d -> last(d), PRIMITIVES))
     eval(quote
-        function $primitive(f::Function, io::IOBuffer = BUFFER; kwargs...)
+        function $primitive(f::Function, io::IOBuffer=BUFFER; kwargs...)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
