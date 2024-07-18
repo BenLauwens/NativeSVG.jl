@@ -46,6 +46,7 @@ function Base.write(filename::AbstractString, svg::NativeSVG.Drawing)
 end
 
 function Drawing(f::Function, io::IOBuffer=BUFFER; kwargs...)
+    task_local_storage(:level, 0)
     svg(
         ;
         xmlns="http://www.w3.org/2000/svg",
@@ -71,15 +72,17 @@ const tex2mml = joinpath(deps, "node_modules", "mathjax-node-cli", "bin", "tex2m
 
 function latex(text::String, io::IOBuffer=BUFFER; kwargs...)
     foreignObject(; kwargs...) do
-        cmd = `$tex2mml --inline=true --speech=false --semantics=false --notexhints=true $text`
-        mml = read(cmd, String)
-        print(io, mml)
+        #cmd = `$tex2mml --inline=true --speech=false --semantics=false --notexhints=true $text`
+        #mml = read(cmd, String)
+        #print(io, mml)
+        println(io, "\\(", text, "\\)")
     end
 end
 
 for primitive in keys(PRIMITIVES)
     eval(quote
         function $primitive(io::IOBuffer=BUFFER; kwargs...)
+            level = task_local_storage(:level)
             print(io, "<", $primitive)
             for (arg, val) in kwargs
                 print(io, " ", replacenotallowed(arg), "=\"", val, "\"")
