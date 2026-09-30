@@ -67,9 +67,6 @@ function cdata(txt::String, io::IOBuffer=BUFFER)
     println(io, "]]>")
 end
 
-const deps = normpath(joinpath(@__DIR__, "..", "deps"))
-const tex2mml = joinpath(deps, "node_modules", "mathjax-node-cli", "bin", "tex2mml")
-
 function latex(text::String, io::IOBuffer=BUFFER; kwargs...)
     foreignObject(; kwargs...) do
         #cmd = `$tex2mml --inline=true --speech=false --semantics=false --notexhints=true $text`

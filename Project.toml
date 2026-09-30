@@ -3,11 +3,8 @@ uuid = "5f95e7b2-fe07-4078-b4a7-f744f426795c"
 keywords = ["SVG"]
 license = "MIT"
 desc = "A pure Julia SVG generator."
-authors = ["Ben Lauwens <ben.lauwens@gmail.com>"]
 version = "0.1.0"
-
-[deps]
-NodeJS = "2bd173c7-0d6d-553b-b6af-13a54713934c"
+authors = ["Ben Lauwens <ben.lauwens@gmail.com>"]
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
